@@ -22,6 +22,13 @@ module Simpler
       @response.finish
     end
 
+    def not_found
+      set_default_headers
+      status 404
+      @response.write File.read(Simpler.root.join('public/404.html'))
+      @response.finish
+    end
+
     private
 
     def extract_name
@@ -30,6 +37,10 @@ module Simpler
 
     def set_default_headers
       @response['Content-Type'] = 'text/html'
+    end
+
+    def add_header(header, value)
+      @response[header] = value
     end
 
     def write_response
@@ -46,8 +57,12 @@ module Simpler
       @request.params
     end
 
-    def render(template)
-      @request.env['simpler.template'] = template
+    def render(options)
+      @request.env['simpler.view-options'] = options
+    end
+
+    def status code
+      @response.status = code
     end
 
   end
