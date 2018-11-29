@@ -14,6 +14,8 @@ module Simpler
     def make_response(action)
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
+      param = @request.env['PATH_PARAM']
+      @request.params[param[:name]] =param[:value]
 
       set_default_headers
       send(action)
@@ -49,7 +51,7 @@ module Simpler
       @response.write(body)
     end
 
-    def render_body
+    def render_body      
       View.new(@request.env).render(binding)
     end
 
@@ -63,6 +65,10 @@ module Simpler
 
     def status code
       @response.status = code
+    end
+
+    def extract_param(str_param)
+      
     end
 
   end

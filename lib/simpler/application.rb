@@ -29,12 +29,13 @@ module Simpler
     def call(env)
       route = @router.route_for(env)
       if route
+        env['PATH_PARAM'] = extract_param(route, env['PATH_INFO'])
         controller = route.controller.new(env)
         action = route.action
         make_response(controller, action)
       else
         Controller.new(env).not_found
-      end  
+      end
     end
 
     private
@@ -55,6 +56,15 @@ module Simpler
 
     def make_response(controller, action)
       controller.make_response(action)
+    end
+
+    def extract_param(route, path)
+      param = {}
+      if route.param_name
+        param[:name] = route.param_name.to_sym
+        param[:value] = path.scan(/(?!(.*\/))(\d*)/).first.last
+      end
+      return param  
     end
 
   end

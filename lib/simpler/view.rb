@@ -15,7 +15,7 @@ module Simpler
         return render_erb(binding) if options[:template]
       else
         render_erb(binding)
-      end          
+      end
     end
 
     def render_erb(binding)
