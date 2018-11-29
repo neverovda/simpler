@@ -15,11 +15,15 @@ module Simpler
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
       param = @request.env['PATH_PARAM']
-      @request.params[param[:name]] =param[:value]
+      @request.params[param[:name]] = param[:value]
 
       set_default_headers
       send(action)
       write_response
+
+      add_header 'Template', @request.env['simpler.template']
+      add_header 'Parameters', params.map { |k,v| [k.to_s, v] }.to_h
+      add_header 'Handler', "#{self.class.name}##{action}"
 
       @response.finish
     end
@@ -66,10 +70,6 @@ module Simpler
     def status code
       @response.status = code
     end
-
-    def extract_param(str_param)
-      
-    end
-
+    
   end
 end
