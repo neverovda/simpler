@@ -16,4 +16,9 @@ class TestsController < Simpler::Controller
     @id = params[:id]
   end
 
+  def question
+    @test_title = params[:test_title]
+    @id = params[:id]     
+  end
+
 end

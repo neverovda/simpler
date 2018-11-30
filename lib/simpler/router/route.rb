@@ -2,7 +2,7 @@ module Simpler
   class Router
     class Route
 
-      attr_reader :controller, :action, :param_name
+      attr_reader :controller, :action
 
       def initialize(method, path, controller, action)
         @method = method
@@ -12,20 +12,22 @@ module Simpler
       end
 
       def match?(method, path)
-        @method == method && path.match(@path_regexp)
+        @method == method && match_path(path)
+      end
+
+      def match_path(path)
+        path.match(@path_regexp)        
       end
 
       private
 
       def make_path_regexp(path)
-        path_point = path.split(':')
-        str = path_point[0]
-        if path_point[1]
-          str << '\d+'
-          @param_name = path_point[1]
-        end  
-        str << '$'
-        Regexp.new str
+        param_names = path.scan(/:\w+/)
+        param_names.each { |name|
+          path.sub!(name, "(?<#{name.delete(':')}>\\w+)")
+        }
+        path.gsub!('/',"\\/" )
+        Regexp.new path << '$'
       end
 
     end

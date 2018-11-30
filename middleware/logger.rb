@@ -13,22 +13,13 @@ class AppLogger
     @logger.info request_line
     
     status, headers, body = @app.call(env)
-
-    if headers['Parameters']
-      params_line = "\nParameters: #{headers['Parameters']}"
-      @logger.info params_line
-      headers.delete('Parameters')
-    end  
-
-    if headers['Handler']
-      handler_line = "\nHandler: #{headers['Handler']}"
-      @logger.info handler_line
-      headers.delete('Handler')
-    end  
+    
+    @logger.info "\nParameters: #{env['simpler.parameters']}"
+    @logger.info "\nHandler: #{env['simpler.handler']}"
 
     response_line = "\nResponse: #{status} "
     response_line << "[#{headers['Content-Type']}]"
-    response_line << " #{headers['Template']}" if headers['Template']      
+    response_line << " #{env['simpler.template']}"
     @logger.info response_line
 
     [status, headers, body]

@@ -18,8 +18,11 @@ module Simpler
     def route_for(env)
       method = env['REQUEST_METHOD'].downcase.to_sym
       path = env['PATH_INFO']
-     
-      @routes.find { |route| route.match?(method, path) }
+           
+      route = @routes.find { |route| route.match?(method, path) }
+      extract_param(env, route, path) if route
+
+      route
     end
 
     private
@@ -35,6 +38,12 @@ module Simpler
 
     def controller_from_string(controller_name)
       Object.const_get("#{controller_name.capitalize}Controller")
+    end
+
+    def extract_param(env, route, path)
+      match_data = route.match_path(path)
+      params = Hash[ match_data.names.map(&:to_sym).zip( match_data.captures ) ]
+      env['simpler.path_params'] = params 
     end
 
   end

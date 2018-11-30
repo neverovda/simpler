@@ -10,10 +10,12 @@ module Simpler
     end
 
     def render(binding)
-      if options.is_a? Hash
-        return options[:plain] + "\n" if options[:plain]
-        return render_erb(binding) if options[:template]
+      plain = Hash(options)[:plain]
+      if plain 
+        @env['simpler.content_type'] = 'text/plain' 
+        "#{plain}\n"        
       else
+         @env['simpler.content_type'] = 'text/html'
         render_erb(binding)
       end
     end
@@ -27,7 +29,7 @@ module Simpler
     private
 
     def options
-      @env['simpler.view-options']
+      @env['simpler.view_options']
     end
 
     def controller
