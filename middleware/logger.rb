@@ -14,7 +14,9 @@ class AppLogger
     
     status, headers, body = @app.call(env)
     
-    @logger.info "\nParameters: #{env['simpler.parameters']}"
+    if env['simpler.controller']
+      @logger.info "\nParameters: #{env['simpler.controller'].params}"
+    end
     @logger.info "\nHandler: #{env['simpler.handler']}"
 
     response_line = "\nResponse: #{status} "

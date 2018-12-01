@@ -15,22 +15,13 @@ module Simpler
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
       
+      set_default_headers
       send(action)
       write_response
-
-      @request.env['simpler.parameters'] = params.map { |k,v| [k.to_s, v] }.to_h
+      
       @request.env['simpler.handler'] = "#{self.class.name}##{action}"
 
-      set_headers
       @response.finish
-    end
-
-    def self.not_found
-      response = Rack::Response.new
-      response['Content-Type'] = 'text/html'
-      response.status = 404
-      response.write File.read(Simpler.root.join('public/404.html'))
-      response.finish
     end
 
     def params
@@ -43,8 +34,8 @@ module Simpler
       self.class.name.match('(?<name>.+)Controller')[:name].downcase
     end
 
-    def set_headers
-      @response['Content-Type'] = @request.env['simpler.content_type']
+    def set_default_headers
+      @response['Content-Type'] = 'text/html'
     end
 
     def add_header(header, value)
@@ -70,6 +61,9 @@ module Simpler
     end
 
     def render(options)
+      if Hash(options)[:plain] 
+        @response['Content-Type'] = 'text/plain' 
+      end  
       @request.env['simpler.view_options'] = options
     end
 

@@ -33,11 +33,19 @@ module Simpler
         action = route.action
         make_response(controller, action)
       else
-        Controller.not_found
+        not_found
       end
     end
 
     private
+
+    def not_found      
+      [
+        404,
+        { 'Content-Type' => 'text/html' },
+        [File.read(Simpler.root.join('public/404.html'))]
+      ]
+    end
 
     def require_app
       Dir["#{Simpler.root}/app/**/*.rb"].each { |file| require file }

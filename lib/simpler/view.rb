@@ -11,11 +11,9 @@ module Simpler
 
     def render(binding)
       plain = Hash(options)[:plain]
-      if plain 
-        @env['simpler.content_type'] = 'text/plain' 
-        "#{plain}\n"        
+      if plain
+        "#{plain}\n"
       else
-         @env['simpler.content_type'] = 'text/html'
         render_erb(binding)
       end
     end
