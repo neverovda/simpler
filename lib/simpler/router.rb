@@ -21,10 +21,8 @@ module Simpler
            
       route = @routes.find { |route| route.match?(method, path) }
       
-      if route
-        env['simpler.path_params'] = route.path_params(env)
-      end
-
+      env['simpler.path_params'] = route.path_params(env) if route
+      
       route
     end
 

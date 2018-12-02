@@ -35,7 +35,7 @@ module Simpler
     end
 
     def set_default_headers
-      @response['Content-Type'] = 'text/html'
+      @response['Content-Type'] ||= 'text/html'
     end
 
     def add_header(header, value)
