@@ -14,12 +14,18 @@ module Simpler
     def make_response(action)
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
-
+      
       set_default_headers
       send(action)
       write_response
+      
+      @request.env['simpler.handler'] = "#{self.class.name}##{action}"
 
       @response.finish
+    end
+
+    def params
+      @params ||= path_params.merge(request_params)
     end
 
     private
@@ -29,7 +35,11 @@ module Simpler
     end
 
     def set_default_headers
-      @response['Content-Type'] = 'text/html'
+      @response['Content-Type'] ||= 'text/html'
+    end
+
+    def add_header(header, value)
+      @response[header] = value
     end
 
     def write_response
@@ -38,17 +48,28 @@ module Simpler
       @response.write(body)
     end
 
-    def render_body
+    def render_body      
       View.new(@request.env).render(binding)
     end
 
-    def params
+    def path_params
+      @request.env['simpler.path_params']
+    end
+
+    def request_params
       @request.params
     end
 
-    def render(template)
-      @request.env['simpler.template'] = template
+    def render(options)
+      if Hash(options)[:plain] 
+        @response['Content-Type'] = 'text/plain' 
+      end  
+      @request.env['simpler.view_options'] = options
     end
 
+    def status(code)
+      @response.status = code
+    end
+    
   end
 end

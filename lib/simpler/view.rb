@@ -10,12 +10,25 @@ module Simpler
     end
 
     def render(binding)
+      plain = Hash(options)[:plain]
+      if plain
+        "#{plain}\n"
+      else
+        render_erb(binding)
+      end
+    end
+
+    def render_erb(binding)
       template = File.read(template_path)
 
       ERB.new(template).result(binding)
     end
 
     private
+
+    def options
+      @env['simpler.view_options']
+    end
 
     def controller
       @env['simpler.controller']
@@ -26,13 +39,16 @@ module Simpler
     end
 
     def template
-      @env['simpler.template']
+      options[:template] if options.is_a? Hash
     end
 
     def template_path
       path = template || [controller.name, action].join('/')
-
-      Simpler.root.join(VIEW_BASE_PATH, "#{path}.html.erb")
+      
+      template_name = "#{path}.html.erb"
+      @env['simpler.template'] = template_name
+      
+      Simpler.root.join(VIEW_BASE_PATH, template_name)
     end
 
   end
